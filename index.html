@@ -25,17 +25,22 @@
 		<script>
 
 			var container, stats;
-			var camera, controls, scene, renderer, group, particle;
+			var camera, controls, scene, renderer, group, box;
 			var mouseX = 0, mouseY = 0;
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
+			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.path = 'textures/';
 
 			init();
 			animate();
 
 			function init() {
-
+                
+                // Set up renderer
+                
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
@@ -53,15 +58,23 @@
 				controls.dampingFactor = 0.25;
 				controls.enableZoom = true;
 
+                // Set up scene
+
 				scene = new THREE.Scene();
+				
+				// Add box
+				
+				var geometry = new THREE.BoxBufferGeometry( 500, 500, 500 );
+				var material = new THREE.MeshBasicMaterial( { map: textureLoader.load('box.png') } );
+				
+				box = new THREE.Mesh( geometry, material );
+				scene.add( box );
+				
+				// Add particles
 
 				group = new THREE.Group();
 				scene.add( group );
 			    
-			    
-				var textureLoader = new THREE.TextureLoader();
-				THREE.ImageUtils.crossOrigin = '';
-				textureLoader.path = 'textures/';
 				var textureNames = [
 				    'snowflake01.png',
 				    'snowflake02.png',
@@ -79,19 +92,19 @@
 				    'snowflake14.png',
 				    'snowflake15.png'
 			    ];
-				var materials = textureNames.map( textureName => new THREE.SpriteMaterial( {map: textureLoader.load(textureName), blending: THREE.AdditiveBlending} ) );
+				var materials = textureNames.map( textureName => new THREE.SpriteMaterial( { map: textureLoader.load(textureName), blending: THREE.AdditiveBlending } ) );
 
-				for ( var i = 0; i < 1000; i++ ) {
+				for ( var i = 0; i < 5000; i++ ) {
                     
                     // A random choice of material
 					var material = materials[ Math.floor(Math.random() * materials.length) ];
-					particle = new THREE.Sprite( material );
+					var particle = new THREE.Sprite( material );
 					
 					// A random position above y = 1000
 					particle.position.x = Math.random() * 2000 - 1000;
 					particle.position.y = Math.random() * 2000 + 3000;
 					particle.position.z = Math.random() * 2000 - 1000;
-					particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
+					particle.scale.x = particle.scale.y = Math.random() * 5 + 5;
 					
 					// Introduce a brownian motion vector
 					particle.vector = new THREE.Vector3( 0, 0, 0 );
@@ -182,7 +195,11 @@
 				    
 				    // Update the position
 				    var newPosition = particle.position.clone().add(gravity).add(particle.vector);
-				    if (newPosition.y <= -1000) {
+				    if (false) {
+				        // Particle on top of the box
+				        newPosition = particle.position.clone();
+				    } else if (newPosition.y <= -1000) {
+				        // Particle fell out of the world
 				        newPosition.x = Math.random() * 2000 - 1000;
 				        newPosition.y = 1000;
 				        newPosition.z = Math.random() * 2000 - 1000;
