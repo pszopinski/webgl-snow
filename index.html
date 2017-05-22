@@ -23,6 +23,8 @@
 		<script src="js/stats.min.js"></script>
 
 		<script>
+			var GRAVITY = new THREE.Vector3( 0, -10, 0 );
+			var BROWNIAN_FACTOR = 5;
 		    var SNOWFLAKE_COUNT = 1000;
 		    var SNOWFLAKE_SIZE = 10;
 
@@ -36,7 +38,6 @@
 			var textureLoader = new THREE.TextureLoader();
 			textureLoader.path = 'textures/';
 			
-			var gravity = new THREE.Vector3( 0, -10, 0 );
 			
 			var raycaster = new THREE.Raycaster();
 
@@ -194,11 +195,11 @@
 				group.children.forEach( particle => {
 				    // Change particle's vector (brownian motion)
 				    var increment = new THREE.Vector3( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 ).multiplyScalar( 0.05 );
-				    var newVector = particle.vector.clone().add(increment).normalize().multiplyScalar( 0.25 );
+				    var newVector = particle.vector.clone().add(increment).normalize().multiplyScalar( BROWNIAN_FACTOR );
 				    particle.vector.set(newVector.x, newVector.y, newVector.z);
 				    
 				    // Calculate new position
-				    var newPosition = particle.position.clone().add(gravity).add(particle.vector);
+				    var newPosition = particle.position.clone().add(GRAVITY).add(particle.vector);
 				    
 				    // Detect collisions
 				    var directionVector = box.position.clone().sub( particle.position ).normalize();
