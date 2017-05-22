@@ -23,6 +23,8 @@
 		<script src="js/stats.min.js"></script>
 
 		<script>
+		    var SNOWFLAKE_COUNT = 1000;
+		    var SNOWFLAKE_SIZE = 10;
 
 			var container, stats;
 			var camera, controls, scene, renderer, group, box;
@@ -33,6 +35,10 @@
 			
 			var textureLoader = new THREE.TextureLoader();
 			textureLoader.path = 'textures/';
+			
+			var gravity = new THREE.Vector3( 0, -10, 0 );
+			
+			var raycaster = new THREE.Raycaster();
 
 			init();
 			animate();
@@ -65,7 +71,7 @@
 				// Add box
 				
 				var geometry = new THREE.BoxBufferGeometry( 500, 500, 500 );
-				var material = new THREE.MeshBasicMaterial( { map: textureLoader.load('box.png') } );
+				var material = new THREE.MeshBasicMaterial( { map: textureLoader.load('wall.png') } );
 				
 				box = new THREE.Mesh( geometry, material );
 				scene.add( box );
@@ -94,7 +100,7 @@
 			    ];
 				var materials = textureNames.map( textureName => new THREE.SpriteMaterial( { map: textureLoader.load(textureName), blending: THREE.AdditiveBlending } ) );
 
-				for ( var i = 0; i < 5000; i++ ) {
+				for ( var i = 0; i < SNOWFLAKE_COUNT; i++ ) {
                     
                     // A random choice of material
 					var material = materials[ Math.floor(Math.random() * materials.length) ];
@@ -104,7 +110,7 @@
 					particle.position.x = Math.random() * 2000 - 1000;
 					particle.position.y = Math.random() * 2000 + 3000;
 					particle.position.z = Math.random() * 2000 - 1000;
-					particle.scale.x = particle.scale.y = Math.random() * 5 + 5;
+					particle.scale.x = particle.scale.y = Math.random() * 5 + SNOWFLAKE_SIZE;
 					
 					// Introduce a brownian motion vector
 					particle.vector = new THREE.Vector3( 0, 0, 0 );
@@ -184,26 +190,31 @@
 
 			}
 
-			function render() {		
-
-                var gravity = new THREE.Vector3( 0, -10, 0 );
+			function render() {
 				group.children.forEach( particle => {
-				    // Introduce brownian motion
+				    // Change particle's vector (brownian motion)
 				    var increment = new THREE.Vector3( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 ).multiplyScalar( 0.05 );
 				    var newVector = particle.vector.clone().add(increment).normalize().multiplyScalar( 0.25 );
 				    particle.vector.set(newVector.x, newVector.y, newVector.z);
 				    
-				    // Update the position
+				    // Calculate new position
 				    var newPosition = particle.position.clone().add(gravity).add(particle.vector);
-				    if (false) {
-				        // Particle on top of the box
+				    
+				    // Detect collisions
+				    var directionVector = box.position.clone().sub( particle.position ).normalize();
+				    raycaster.set( particle.position, directionVector );
+				    var intersections = raycaster.intersectObject( box );
+				    if (intersections.length == 0 || intersections[0].distance < SNOWFLAKE_SIZE) {
 				        newPosition = particle.position.clone();
-				    } else if (newPosition.y <= -1000) {
-				        // Particle fell out of the world
+				    }
+				    
+				    // Reset particles that fell out of the world
+				    if (newPosition.y <= -1000) {
 				        newPosition.x = Math.random() * 2000 - 1000;
 				        newPosition.y = 1000;
 				        newPosition.z = Math.random() * 2000 - 1000;
 				    }
+				    
 				    particle.position.set(newPosition.x, newPosition.y, newPosition.z);
 				} );
 
