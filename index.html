@@ -19,12 +19,13 @@
 	<body>
 
 		<script src="js/three.min.js"></script>
+		<script src="js/OrbitControls.js"></script>
 		<script src="js/stats.min.js"></script>
 
 		<script>
 
 			var container, stats;
-			var camera, scene, renderer, group, particle;
+			var camera, controls, scene, renderer, group, particle;
 			var mouseX = 0, mouseY = 0;
 
 			var windowHalfX = window.innerWidth / 2;
@@ -38,8 +39,19 @@
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
-				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
-				camera.position.z = 1000;
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.x = -1000;
+				camera.position.y = 750;
+
+				renderer = new THREE.WebGLRenderer( {antialias: true} );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+				
+				controls = new THREE.OrbitControls( camera, renderer.domElement );
+				controls.enableDamping = true;
+				controls.dampingFactor = 0.25;
+				controls.enableZoom = true;
 
 				scene = new THREE.Scene();
 
@@ -75,9 +87,9 @@
 					var material = materials[ Math.floor(Math.random() * materials.length) ];
 					particle = new THREE.Sprite( material );
 					
-					// A random position
+					// A random position above y = 1000
 					particle.position.x = Math.random() * 2000 - 1000;
-					particle.position.y = Math.random() * 2000 - 1000;
+					particle.position.y = Math.random() * 2000 + 3000;
 					particle.position.z = Math.random() * 2000 - 1000;
 					particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
 					
@@ -86,11 +98,6 @@
 					
 					group.add( particle );
 				}
-
-				renderer = new THREE.WebGLRenderer( {antialias: true} );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				container.appendChild( renderer.domElement );
 
 				stats = new Stats();
 				container.appendChild( stats.dom );
@@ -155,6 +162,8 @@
 
 			function animate() {
 
+				controls.update();
+
 				requestAnimationFrame( animate );
 
 				render();
@@ -162,13 +171,9 @@
 
 			}
 
-			function render() {
+			function render() {		
 
-				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-				camera.lookAt( scene.position );				
-
-                var gravity = new THREE.Vector3( 0, 0, -10 );
+                var gravity = new THREE.Vector3( 0, -10, 0 );
 				group.children.forEach( particle => {
 				    // Introduce brownian motion
 				    var increment = new THREE.Vector3( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 ).multiplyScalar( 0.05 );
@@ -177,8 +182,10 @@
 				    
 				    // Update the position
 				    var newPosition = particle.position.clone().add(gravity).add(particle.vector);
-				    if (newPosition.z <= -1000) {
-				        newPosition.z = 1000;
+				    if (newPosition.y <= -1000) {
+				        newPosition.x = Math.random() * 2000 - 1000;
+				        newPosition.y = 1000;
+				        newPosition.z = Math.random() * 2000 - 1000;
 				    }
 				    particle.position.set(newPosition.x, newPosition.y, newPosition.z);
 				} );
