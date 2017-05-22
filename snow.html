@@ -19,10 +19,6 @@
 	<body>
 
 		<script src="js/three.min.js"></script>
-
-		<script src="js/Projector.js"></script>
-		<script src="js/CanvasRenderer.js"></script>
-
 		<script src="js/stats.min.js"></script>
 
 		<script>
@@ -58,24 +54,27 @@
 
 				group = new THREE.Group();
 				scene.add( group );
-				
+			    
+			    
 				var textureLoader = new THREE.TextureLoader();
+				THREE.ImageUtils.crossOrigin = '';
+				textureLoader.path = 'textures/';
 				var textureNames = [
-				    'textures/snowflake01.png',
-				    'textures/snowflake02.png',
-				    'textures/snowflake03.png',
-				    'textures/snowflake04.png',
-				    'textures/snowflake05.png',
-				    'textures/snowflake06.png',
-				    'textures/snowflake07.png',
-				    'textures/snowflake08.png',
-				    'textures/snowflake09.png',
-				    'textures/snowflake10.png',
-				    'textures/snowflake11.png',
-				    'textures/snowflake12.png',
-				    'textures/snowflake13.png',
-				    'textures/snowflake14.png',
-				    'textures/snowflake15.png'
+				    'snowflake01.png',
+				    'snowflake02.png',
+				    'snowflake03.png',
+				    'snowflake04.png',
+				    'snowflake05.png',
+				    'snowflake06.png',
+				    'snowflake07.png',
+				    'snowflake08.png',
+				    'snowflake09.png',
+				    'snowflake10.png',
+				    'snowflake11.png',
+				    'snowflake12.png',
+				    'snowflake13.png',
+				    'snowflake14.png',
+				    'snowflake15.png'
 			    ];
 				var materials = textureNames.map( textureName => new THREE.SpriteMaterial( {map: textureLoader.load(textureName), blending: THREE.AdditiveBlending} ) );
 
@@ -92,7 +91,7 @@
 					group.add( particle );
 				}
 
-				renderer = new THREE.CanvasRenderer();
+				renderer = new THREE.WebGLRenderer( {antialias: true} );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
