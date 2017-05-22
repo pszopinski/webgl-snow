@@ -43,15 +43,6 @@
 
 				scene = new THREE.Scene();
 
-				var PI2 = Math.PI * 2;
-				var program = function ( context ) {
-
-					context.beginPath();
-					context.arc( 0, 0, 0.5, 0, PI2, true );
-					context.fill();
-
-				};
-
 				group = new THREE.Group();
 				scene.add( group );
 			    
@@ -80,14 +71,19 @@
 
 				for ( var i = 0; i < 1000; i++ ) {
                     
-                    // A random choice of the material
+                    // A random choice of material
 					var material = materials[ Math.floor(Math.random() * materials.length) ];
-
 					particle = new THREE.Sprite( material );
+					
+					// A random position
 					particle.position.x = Math.random() * 2000 - 1000;
 					particle.position.y = Math.random() * 2000 - 1000;
 					particle.position.z = Math.random() * 2000 - 1000;
 					particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
+					
+					// Introduce a brownian motion vector
+					particle.vector = new THREE.Vector3( 0, 0, 0 );
+					
 					group.add( particle );
 				}
 
@@ -170,10 +166,22 @@
 
 				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
 				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-				camera.lookAt( scene.position );
+				camera.lookAt( scene.position );				
 
-				//group.rotation.x += 0.01;
-				//group.rotation.y += 0.02;
+                var gravity = new THREE.Vector3( 0, 0, -10 );
+				group.children.forEach( particle => {
+				    // Introduce brownian motion
+				    var increment = new THREE.Vector3( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 ).multiplyScalar( 0.05 );
+				    var newVector = particle.vector.clone().add(increment).normalize().multiplyScalar( 0.25 );
+				    particle.vector.set(newVector.x, newVector.y, newVector.z);
+				    
+				    // Update the position
+				    var newPosition = particle.position.clone().add(gravity).add(particle.vector);
+				    if (newPosition.z <= -1000) {
+				        newPosition.z = 1000;
+				    }
+				    particle.position.set(newPosition.x, newPosition.y, newPosition.z);
+				} );
 
 				renderer.render( scene, camera );
 
