@@ -58,13 +58,31 @@
 
 				group = new THREE.Group();
 				scene.add( group );
+				
+				var textureLoader = new THREE.TextureLoader();
+				var textureNames = [
+				    'textures/snowflake01.png',
+				    'textures/snowflake02.png',
+				    'textures/snowflake03.png',
+				    'textures/snowflake04.png',
+				    'textures/snowflake05.png',
+				    'textures/snowflake06.png',
+				    'textures/snowflake07.png',
+				    'textures/snowflake08.png',
+				    'textures/snowflake09.png',
+				    'textures/snowflake10.png',
+				    'textures/snowflake11.png',
+				    'textures/snowflake12.png',
+				    'textures/snowflake13.png',
+				    'textures/snowflake14.png',
+				    'textures/snowflake15.png'
+			    ];
+				var materials = textureNames.map( textureName => new THREE.SpriteMaterial( {map: textureLoader.load(textureName), blending: THREE.AdditiveBlending} ) );
 
 				for ( var i = 0; i < 1000; i++ ) {
-
-					var material = new THREE.SpriteCanvasMaterial( {
-						color: Math.random() * 0x808008 + 0x808080,
-						program: program
-					} );
+                    
+                    // A random choice of the material
+					var material = materials[ Math.floor(Math.random() * materials.length) ];
 
 					particle = new THREE.Sprite( material );
 					particle.position.x = Math.random() * 2000 - 1000;
