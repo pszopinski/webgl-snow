@@ -94,7 +94,7 @@
 				scene = new THREE.Scene();
 				scene.fog = new THREE.FogExp2( BACKGROUND_COLOR, 0.000375 );
 				
-				ambient = new THREE.AmbientLight( 0xffffff );
+				ambient = new THREE.AmbientLight( 0xffffff, 0.5 );
 				scene.add( ambient );
 				
 				directional = new THREE.DirectionalLight( 0xffffff, 0.5 );
@@ -119,22 +119,26 @@
 				var material = new THREE.MeshBasicMaterial( { map: textureLoader.load('textures/wall.png') } );
 				
 				box = new THREE.Mesh( geometry, material );
-				box.position.x = 1500;
+				//box.position.x = 500; // When we move the box, something wrong happens to the collision procedure
 				scene.add( box );
-				
 				// Add planet
 				
 				modelLoader.load( 'models/planet.json', geometry => {
+                    geometry.faceVertexUvs[ 1 ] = geometry.faceVertexUvs[ 0 ];
+				    geometry.center();
+				    geometry.normalize();
 				    var material = new THREE.MeshPhongMaterial( {
 				        map: textureLoader.load('textures/planet_diffuse.png'),
-				        specular: 0x333333,
-				        shininess: 50,
+				        specular: 0x3f3f3f,
+				        shininess: 30,
 				        specularMap: textureLoader.load('textures/planet_specular.png'),
 				        aoMap: textureLoader.load('textures/planet_ao.png'),
-				        aoMapIntensity: 0
+				        aoMapIntensity: 1
 				    } );
 				    planet = new THREE.Mesh( geometry, material );
-				    planet.scale.x = planet.scale.y = planet.scale.z = 500;
+				    planet.position.set( 1000, 0, 1000 );
+				    planet.scale.set( 500, 500, 500 );
+				    console.log( planet );
 				    scene.add( planet );
 				} );
 				
