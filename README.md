@@ -3,10 +3,10 @@ A particle system with collision detection written in three.js.
 
 ## TODO
 
-* [] Implement object rotation
-* [] Optimize to allow for more geometry to collide with
-* [] Make the scene prettier
-* [] Add a GUI for various parameters
+* [ ] Implement object rotation
+* [ ] Optimize to allow for more geometry to collide with
+* [ ] Make the scene prettier
+* [ ] Add a GUI for various parameters
 
 ## Usage
 
