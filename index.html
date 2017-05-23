@@ -24,7 +24,7 @@
 
 		<script>
 		    var BACKGROUND_COLOR = 0x333333;
-		
+		    
 			var GRAVITY = new THREE.Vector3( 0, -10, 0 ); // gravity vector
 			var BROWNIAN_FACTOR = 5; // brownian motion factor
 		    var SNOWFLAKE_COUNT = 2000; // total number of particles
@@ -32,18 +32,19 @@
 		    var SNOWFLAKE_OPACITY = 0.75; // starting opacity
 		    var SNOWFLAKE_TYPES = 0; // 0 for all
 		    var MELTING_FACTOR = 0.9975; // must be >= 0 and < 1
-            
-            var sound1, sound2;
+
 			var container, stats;
-			var camera, controls, scene, renderer, group, box;
+			var camera, renderer, controls;
+			var scene, ambient, directional, warm, cold;
+			var group, box, planet;
 			var mouseX = 0, mouseY = 0;
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
 			
+			var modelLoader = new THREE.JSONLoader();
 			var textureLoader = new THREE.TextureLoader();
-			textureLoader.path = 'textures/';
-			textureLoader.withCredentials = true;
+			
 			
 			var raycaster = new THREE.Raycaster();
 
@@ -66,22 +67,6 @@
 			}
 
 			function init() {
-			
-			    // Set up sound effects
-			    
-			    sound1 = document.createElement( 'audio' );
-			    sound1.autoplay = 'autoplay';
-			    sound1.loop = 'loop';
-			    sound1.src = 'sound/wind29.mp3';
-			    sound1.type = 'audio/mpeg';
-				document.body.appendChild( sound1 );
-			    
-			    sound2 = document.createElement( 'audio' );
-			    sound2.autoplay = 'autoplay';
-			    sound2.loop = 'loop';
-			    sound2.src = 'sound/wind113.mp3';
-			    sound2.type = 'audio/mpeg';
-				document.body.appendChild( sound2 );
                 
                 // Set up renderer
                 
@@ -109,13 +94,49 @@
 				scene = new THREE.Scene();
 				scene.fog = new THREE.FogExp2( BACKGROUND_COLOR, 0.000375 );
 				
+				ambient = new THREE.AmbientLight( 0xffffff );
+				scene.add( ambient );
+				
+				directional = new THREE.DirectionalLight( 0xffffff, 0.5 );
+				directional.position.y = 1000;
+				scene.add( directional );
+				
+				warm = new THREE.PointLight( 0xffe6bf, 0.5 );
+				warm.position.x = -1000;
+				warm.position.y = 500;
+				warm.position.z = 1000;
+				scene.add( warm );
+				
+				cold = new THREE.PointLight( 0xbfd9ff, 0.5 );
+				cold.position.x = 1000;
+				cold.position.y = 500;
+				cold.position.z = -1000;
+				scene.add( cold );
+				
 				// Add box
 				
 				var geometry = new THREE.BoxBufferGeometry( 500, 500, 500, 10 );
-				var material = new THREE.MeshBasicMaterial( { map: textureLoader.load('wall.png') } );
+				var material = new THREE.MeshBasicMaterial( { map: textureLoader.load('textures/wall.png') } );
 				
 				box = new THREE.Mesh( geometry, material );
+				box.position.x = 1500;
 				scene.add( box );
+				
+				// Add planet
+				
+				modelLoader.load( 'models/planet.json', geometry => {
+				    var material = new THREE.MeshPhongMaterial( {
+				        map: textureLoader.load('textures/planet_diffuse.png'),
+				        specular: 0x333333,
+				        shininess: 50,
+				        specularMap: textureLoader.load('textures/planet_specular.png'),
+				        aoMap: textureLoader.load('textures/planet_ao.png'),
+				        aoMapIntensity: 0
+				    } );
+				    planet = new THREE.Mesh( geometry, material );
+				    planet.scale.x = planet.scale.y = planet.scale.z = 500;
+				    scene.add( planet );
+				} );
 				
 				// Add particles
 
@@ -123,21 +144,21 @@
 				scene.add( group );
 			    
 				var textureNames = [
-				    'snowflake01.png',
-				    'snowflake02.png',
-				    'snowflake03.png',
-				    'snowflake04.png',
-				    'snowflake05.png',
-				    'snowflake06.png',
-				    'snowflake07.png',
-				    'snowflake08.png',
-				    'snowflake09.png',
-				    'snowflake10.png',
-				    'snowflake11.png',
-				    'snowflake12.png',
-				    'snowflake13.png',
-				    'snowflake14.png',
-				    'snowflake15.png'
+				    'textures/snowflake01.png',
+				    'textures/snowflake02.png',
+				    'textures/snowflake03.png',
+				    'textures/snowflake04.png',
+				    'textures/snowflake05.png',
+				    'textures/snowflake06.png',
+				    'textures/snowflake07.png',
+				    'textures/snowflake08.png',
+				    'textures/snowflake09.png',
+				    'textures/snowflake10.png',
+				    'textures/snowflake11.png',
+				    'textures/snowflake12.png',
+				    'textures/snowflake13.png',
+				    'textures/snowflake14.png',
+				    'textures/snowflake15.png'
 			    ];
 				var materials = textureNames.slice(Math.min(textureNames.length, SNOWFLAKE_TYPES)).map( textureName =>  new THREE.SpriteMaterial( {
 		            map: textureLoader.load(textureName),
