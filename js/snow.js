@@ -1,5 +1,5 @@
 /*global THREE*/
-var scene, camera, renderer, controls;
+var scene, camera, renderer, stats, controls;
 
 init();
 animate();
@@ -17,13 +17,15 @@ function init() {
 
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  stats = new Stats();
+  document.body.appendChild(stats.dom);
 
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.5;
-  controls.enableZoop = true;
-
-  document.body.appendChild(renderer.domElement);
+  controls.enableZoom = true;
 }
 
 function animate() {
