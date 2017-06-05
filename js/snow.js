@@ -7,8 +7,12 @@ function init() {
     // Params
     params = {
         'Number of snowflakes': 1000,
+        'Snowflake size': 0.1,
         'Downward motion': 5,
-        'Brownian motion': 2
+        'Brownian motion': 1,
+        'Melting factor': 1.01,
+        'Step size': 0.01,
+        'Scene size': 10
     };
 
     // Scene
@@ -19,6 +23,7 @@ function init() {
     for (let i = 0; i < params['Number of snowflakes']; i++) {
         snowflakes[i] = new Snowflake(i);
     }
+    scene.add(snowflakes[0].sprite); // REMOVE THIS
 
     // Camera
     camera = new THREE.PerspectiveCamera(
@@ -46,14 +51,14 @@ function init() {
     sceneFolder.open();
 
     snowflakesFolder
-        .add(params, 'Number of snowflakes', 500, 5000)
+        .add(params, 'Number of snowflakes', 0, 2000)
         .step(100)
         .onChange(val => console.log('Number of snowflakes: ' + val));
     snowflakesFolder
         .add(params, 'Downward motion', 0, 10)
         .onChange(val => console.log('Downward motion: ' + val));
     snowflakesFolder
-        .add(params, 'Brownian motion', 0, 10)
+        .add(params, 'Brownian motion', 0, 2)
         .onChange(val => console.log('Brownian motion: ' + val));
 
     // Controls
@@ -75,6 +80,8 @@ function onWindowResize() {
 }
 
 function animate() {
+    snowflakes.forEach(snowflake => snowflake.update());
+
     requestAnimationFrame(animate);
 
     controls.update();
