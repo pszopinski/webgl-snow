@@ -26,10 +26,25 @@ function init() {
   controls.enableDamping = true;
   controls.dampingFactor = 0.5;
   controls.enableZoom = true;
+
+  window.addEventListener('resize', onWindowResize, false);
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function animate() {
   requestAnimationFrame(animate);
+
+  controls.update();
+
+  stats.update();
+
   renderer.render(scene, camera);
 }
 
