@@ -1,11 +1,24 @@
-var scene, camera, renderer, stats, gui, params, controls;
+var params, scene, snowflakes, camera, renderer, stats, gui, controls;
 
 init();
 animate();
 
 function init() {
+    // Params
+    params = {
+        'Number of snowflakes': 1000,
+        'Downward motion': 5,
+        'Brownian motion': 2
+    };
+
     // Scene
     scene = new THREE.Scene();
+
+    // Snowflakes
+    snowflakes = [];
+    for (let i = 0; i < params['Number of snowflakes']; i++) {
+        snowflakes[i] = new Snowflake(i);
+    }
 
     // Camera
     camera = new THREE.PerspectiveCamera(
@@ -25,20 +38,13 @@ function init() {
     stats = new Stats();
     document.body.appendChild(stats.dom);
 
-    // Params
-    params = {
-        'Number of snowflakes': 1000,
-        'Downward motion': 5,
-        'Brownian motion': 2
-    };
-
     // GUI
     gui = new dat.GUI({ width: 300 });
     var snowflakesFolder = gui.addFolder('Snowflakes');
     snowflakesFolder.open();
     var sceneFolder = gui.addFolder('Scene');
     sceneFolder.open();
-    
+
     snowflakesFolder
         .add(params, 'Number of snowflakes', 500, 5000)
         .step(100)
