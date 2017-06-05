@@ -1,5 +1,4 @@
-function Snowflake(id) {
-    this.id = id;
+function Snowflake() {
     this.state = 'unborn';
 
     var image = new THREE.TextureLoader().load(
@@ -25,18 +24,22 @@ function Snowflake(id) {
             z = Math.random() * params['Scene size'] / 2;
             z *= Math.random() < 0.5 ? -1 : 1;
             this.sprite.position.set(x, y, z);
+
             // Reset opacity and scale
-            this.material.opacity = 0.8;
+            this.material.opacity = 1;
             let scale = (1 + Math.random()) * params['Snowflake size'];
             this.sprite.scale.set(scale, scale, scale);
-            // Set the brownian vector
+
+            // Reset the brownian vector
             this.vector = new THREE.Vector3(0, 0, 0);
+
             // Add the snowflake to the scene
             scene.add(this.sprite);
+
             // Change the state
             this.state = 'in-flight';
         } else if (this.state == 'in-flight') {
-            // Remove out-of-bound snowflakes
+            // Remove out-of-bounds snowflakes
             let limit = params['Scene size'] / 2;
             if (
                 Math.abs(this.sprite.position.x) > limit ||
@@ -46,11 +49,14 @@ function Snowflake(id) {
                 this.state = 'unborn';
                 return;
             }
+
             // Detect collisions
             // TODO
+
             // Apply downward motion
             this.sprite.position.y -=
                 params['Downward motion'] * params['Step size'];
+
             // Modyfiy the brownian vector
             let increment = new THREE.Vector3(
                 Math.random() - 0.5,
@@ -63,6 +69,7 @@ function Snowflake(id) {
                 .multiplyScalar(
                     params['Brownian motion'] * params['Step size']
                 );
+
             // Apply brownian motion
             this.sprite.position.add(this.vector);
         } else if (this.state == 'melting') {
@@ -71,11 +78,11 @@ function Snowflake(id) {
                 this.state = 'unborn';
                 return;
             }
-            // Modify the scale and opacity
-            this.material.opacity /= Math.pow(params['Melting factor'], 2);
-            this.sprite.scale.multiplyScalar(
-                Math.sqrt(params['Melting factor'])
-            );
+
+            // Modify scale and opacity
+            let multiplier = 1 - params['Melting factor'] / 10;
+            this.material.opacity *= Math.pow(multiplier, 2);
+            this.sprite.scale.divideScalar(Math.sqrt(multiplier));
         }
     };
 }

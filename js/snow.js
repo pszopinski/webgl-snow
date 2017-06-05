@@ -10,9 +10,9 @@ function init() {
         'Snowflake size': 0.1,
         'Downward motion': 5,
         'Brownian motion': 1,
-        'Melting factor': 1.01,
+        'Melting factor': 0.5,
         'Step size': 0.01,
-        'Scene size': 10
+        'Scene size': 15
     };
 
     // Scene
@@ -21,9 +21,8 @@ function init() {
     // Snowflakes
     snowflakes = [];
     for (let i = 0; i < params['Number of snowflakes']; i++) {
-        snowflakes[i] = new Snowflake(i);
+        snowflakes[i] = new Snowflake();
     }
-    scene.add(snowflakes[0].sprite); // REMOVE THIS
 
     // Camera
     camera = new THREE.PerspectiveCamera(
@@ -44,7 +43,7 @@ function init() {
     document.body.appendChild(stats.dom);
 
     // GUI
-    gui = new dat.GUI({ width: 300 });
+    gui = new dat.GUI({ width: 350 });
     var snowflakesFolder = gui.addFolder('Snowflakes');
     snowflakesFolder.open();
     var sceneFolder = gui.addFolder('Scene');
@@ -52,14 +51,45 @@ function init() {
 
     snowflakesFolder
         .add(params, 'Number of snowflakes', 0, 2000)
-        .step(100)
-        .onChange(val => console.log('Number of snowflakes: ' + val));
+        .step(1)
+        .onChange(val => {
+            let delta = val - snowflakes.length;
+            console.log(delta);
+            if (delta < 0) {
+                // Remove snowflakes
+                for (let i = 0; i < -1 * delta; i++) {
+                    console.log('remove ' + i);
+                    scene.remove(snowflakes[i].sprite);
+                }
+                snowflakes.splice(0, -1 * delta);
+            } else {
+                // Add snowflakes
+                for (let i = 0; i < delta; i++) {
+                    console.log('add ' + snowflakes.length);
+                    snowflakes.push(new Snowflake());
+                }
+            }
+            params['Number of snowflakes'] = val;
+        });
+    snowflakesFolder
+        .add(params, 'Snowflake size', 0, 0.2)
+        .onChange(val => (params['Snowflake size'] = val));
     snowflakesFolder
         .add(params, 'Downward motion', 0, 10)
-        .onChange(val => console.log('Downward motion: ' + val));
+        .onChange(val => (params['Downward motion'] = val));
     snowflakesFolder
         .add(params, 'Brownian motion', 0, 2)
-        .onChange(val => console.log('Brownian motion: ' + val));
+        .onChange(val => (params['Brownian motion'] = val));
+    snowflakesFolder
+        .add(params, 'Melting factor', 0, 1)
+        .onChange(val => (params['Melting factor'] = val));
+    snowflakesFolder
+        .add(params, 'Step size', 0.005, 0.015)
+        .onChange(val => (params['Step size'] = val));
+
+    sceneFolder
+        .add(params, 'Scene size', 0, 30)
+        .onChange(val => (params['Scene size'] = val));
 
     // Controls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
