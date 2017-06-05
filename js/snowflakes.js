@@ -1,3 +1,5 @@
+var snowflakes = [];
+
 function Snowflake() {
     this.state = 'unborn';
 
@@ -7,7 +9,8 @@ function Snowflake() {
     var rotation = Math.random() * Math.PI * 2;
     this.material = new THREE.SpriteMaterial({
         map: image,
-        rotation: rotation
+        rotation: rotation,
+        fog: true
     });
 
     this.sprite = new THREE.Sprite(this.material);
@@ -26,7 +29,7 @@ function Snowflake() {
             this.sprite.position.set(x, y, z);
 
             // Reset opacity and scale
-            this.material.opacity = 1;
+            this.material.opacity = 0.5;
             let scale = (1 + Math.random()) * params['Snowflake size'];
             this.sprite.scale.set(scale, scale, scale);
 

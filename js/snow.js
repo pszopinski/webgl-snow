@@ -1,4 +1,4 @@
-var params, scene, snowflakes, camera, renderer, stats, gui, controls;
+var params, scene, camera, renderer, stats, gui, controls;
 
 init();
 animate();
@@ -17,9 +17,15 @@ function init() {
 
     // Scene
     scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x000000, 1, 50);
+
+    // Lights
+    lights.forEach(light => scene.add(light));
+
+    // Objects
+    objects.forEach(object => scene.add(object));
 
     // Snowflakes
-    snowflakes = [];
     for (let i = 0; i < params['Number of snowflakes']; i++) {
         snowflakes[i] = new Snowflake();
     }
@@ -31,10 +37,11 @@ function init() {
         1,
         100
     );
-    camera.position.set(0, 5, 10);
+    camera.position.set(-6, 6, 8);
 
     // Renderer
     renderer = new THREE.WebGLRenderer();
+    renderer.shadowMap.enabled = true;
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
