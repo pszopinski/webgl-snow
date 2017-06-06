@@ -1,54 +1,52 @@
-var objects, floor, cube, sphere;
+var objects, floor, box, sphere;
 
 function createFloor() {
-    var geometry = new THREE.PlaneBufferGeometry(30, 30);
-    var material = new THREE.MeshPhongMaterial({
-        color: 0xcccccc,
-        side: THREE.DoubleSide,
-        shininess: 15,
-        dithering: true
+    var geometry = new THREE.CircleBufferGeometry(7.5, 8);
+    var material = new THREE.MeshStandardMaterial({
+        color: 0x333333,
+        metalness: 0.2,
+        roughness: 0.8
     });
     var floor = new THREE.Mesh(geometry, material);
-    floor.position.y = -0.01;
-    floor.rotation.x = Math.PI / 2;
+    floor.position.y = -1;
+    floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     return floor;
 }
 
-function createCube() {
+function createBox() {
     var geometry = new THREE.BoxBufferGeometry(2, 2, 2);
-    var material = new THREE.MeshPhongMaterial({
-        color: 0xffffff,
-        side: THREE.DoubleSide,
-        shininess: 100,
-        dithering: true
+    var material = new THREE.MeshStandardMaterial({
+        color: 0x66aaff,
+        shading: THREE.FlatShading,
+        metalness: 0.2,
+        roughness: 0.1
     });
-    var cube = new THREE.Mesh(geometry, material);
-    cube.position.set(1, 1, 1);
-    cube.castShadow = true;
-    return cube;
+    var box = new THREE.Mesh(geometry, material);
+    box.receiveShadow = true;
+    box.castShadow = true;
+    return box;
 }
 
 function createSphere() {
-    var geometry = new THREE.SphereBufferGeometry(1, 12, 12);
-    var material = new THREE.MeshPhongMaterial({
-        color: 0xffffff,
-        side: THREE.DoubleSide,
-        shininess: 150,
-        dithering: true
+    var geometry = new THREE.IcosahedronGeometry(1, 2);
+    var material = new THREE.MeshStandardMaterial({
+        color: 0xff66aa,
+        metalness: 0.2,
+        roughness: 0.1
     });
     var sphere = new THREE.Mesh(geometry, material);
-    sphere.position.set(-1, 1, -1);
+    sphere.receiveShadow = true;
     sphere.castShadow = true;
     return sphere;
 }
 
 floor = createFloor();
-cube = createCube();
+box = createBox();
 sphere = createSphere();
 
 objects = [];
 objects.push(floor);
-objects.push(cube);
+objects.push(box);
 objects.push(sphere);
 

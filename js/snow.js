@@ -9,15 +9,18 @@ function init() {
         'Number of snowflakes': 1000,
         'Snowflake size': 0.1,
         'Downward motion': 5,
-        'Brownian motion': 1,
-        'Melting factor': 0.5,
+        'Brownian motion': 2,
+        'Melting factor': 0.05,
         'Step size': 0.01,
-        'Scene size': 15
+        'Scene size': 15,
+        'Show floor': true,
+        'Show box': true,
+        'Show sphere': false
     };
 
     // Scene
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x000000, 1, 50);
+    scene.fog = new THREE.Fog(0x111111, 1, 50);
 
     // Lights
     lights.forEach(light => scene.add(light));
@@ -37,10 +40,11 @@ function init() {
         1,
         100
     );
-    camera.position.set(-6, 6, 8);
+    camera.position.set(-3, 2, -4);
 
     // Renderer
     renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(0x111111, 1);
     renderer.shadowMap.enabled = true;
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
@@ -57,7 +61,7 @@ function init() {
     sceneFolder.open();
 
     snowflakesFolder
-        .add(params, 'Number of snowflakes', 0, 2000)
+        .add(params, 'Number of snowflakes', 0, 5000)
         .step(1)
         .onChange(val => {
             let delta = val - snowflakes.length;
@@ -85,10 +89,10 @@ function init() {
         .add(params, 'Downward motion', 0, 10)
         .onChange(val => (params['Downward motion'] = val));
     snowflakesFolder
-        .add(params, 'Brownian motion', 0, 2)
+        .add(params, 'Brownian motion', 0, 10)
         .onChange(val => (params['Brownian motion'] = val));
     snowflakesFolder
-        .add(params, 'Melting factor', 0, 1)
+        .add(params, 'Melting factor', 0, 0.5)
         .onChange(val => (params['Melting factor'] = val));
     snowflakesFolder
         .add(params, 'Step size', 0.005, 0.015)
@@ -97,6 +101,24 @@ function init() {
     sceneFolder
         .add(params, 'Scene size', 0, 30)
         .onChange(val => (params['Scene size'] = val));
+    sceneFolder
+        .add(params, 'Show floor')
+        .onChange(val => {
+            val ? scene.add(floor) : scene.remove(floor);
+            params['Show floor'] = val;
+        });
+    sceneFolder
+        .add(params, 'Show box')
+        .onChange(val => {
+            val ? scene.add(box) : scene.remove(box);
+            params['Show box'] = val;
+        });
+    sceneFolder
+        .add(params, 'Show sphere')
+        .onChange(val => {
+            val ? scene.add(sphere) : scene.remove(sphere);
+            params['Show sphere'] = val;
+        });
 
     // Controls
     controls = new THREE.OrbitControls(camera, renderer.domElement);

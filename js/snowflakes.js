@@ -1,4 +1,5 @@
 var snowflakes = [];
+var raycaster = new THREE.Raycaster();
 
 function Snowflake() {
     this.state = 'unborn';
@@ -29,8 +30,8 @@ function Snowflake() {
             this.sprite.position.set(x, y, z);
 
             // Reset opacity and scale
-            this.material.opacity = 0.5;
-            let scale = (1 + Math.random()) * params['Snowflake size'];
+            this.material.opacity = 1;
+            let scale = (0.5 + 0.5 * Math.random()) * params['Snowflake size'];
             this.sprite.scale.set(scale, scale, scale);
 
             // Reset the brownian vector
@@ -53,8 +54,24 @@ function Snowflake() {
                 return;
             }
 
-            // Detect collisions
-            // TODO
+            // Detect collisions in two directions
+            [new THREE.Vector3(0, -1, 0), this.vector].forEach(vector => {
+                raycaster.set(this.sprite.position, vector);
+                objects.forEach(object => {
+                    // Skip hidden objects
+                    if (object.parent != scene) {
+                        return;
+                    }
+                    let intersections = raycaster.intersectObject(object);
+                    if (
+                        intersections.length > 0 &&
+                        intersections[0].distance < params['Snowflake size']
+                    ) {
+                        this.state = 'melting';
+                        return;
+                    }
+                });
+            });
 
             // Apply downward motion
             this.sprite.position.y -=
@@ -65,7 +82,7 @@ function Snowflake() {
                 Math.random() - 0.5,
                 Math.random() - 0.5,
                 Math.random() - 0.5
-            ).divideScalar(5000);
+            ).divideScalar(2500);
             this.vector
                 .add(increment)
                 .normalize()
