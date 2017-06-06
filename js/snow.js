@@ -62,21 +62,18 @@ function init() {
 
     snowflakesFolder
         .add(params, 'Number of snowflakes', 0, 5000)
-        .step(1)
+        .step(500)
         .onChange(val => {
             let delta = val - snowflakes.length;
-            console.log(delta);
             if (delta < 0) {
                 // Remove snowflakes
                 for (let i = 0; i < -1 * delta; i++) {
-                    console.log('remove ' + i);
                     scene.remove(snowflakes[i].sprite);
                 }
                 snowflakes.splice(0, -1 * delta);
             } else {
                 // Add snowflakes
                 for (let i = 0; i < delta; i++) {
-                    console.log('add ' + snowflakes.length);
                     snowflakes.push(new Snowflake());
                 }
             }
