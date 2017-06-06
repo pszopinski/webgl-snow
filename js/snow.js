@@ -26,7 +26,15 @@ function init() {
     lights.forEach(light => scene.add(light));
 
     // Objects
-    objects.forEach(object => scene.add(object));
+    if (params['Show floor']) {
+        scene.add(floor);
+    }
+    if (params['Show box']) {
+        scene.add(box);
+    }
+    if (params['Show sphere']) {
+        scene.add(sphere);
+    }
 
     // Snowflakes
     for (let i = 0; i < params['Number of snowflakes']; i++) {
@@ -98,24 +106,18 @@ function init() {
     sceneFolder
         .add(params, 'Scene size', 0, 30)
         .onChange(val => (params['Scene size'] = val));
-    sceneFolder
-        .add(params, 'Show floor')
-        .onChange(val => {
-            val ? scene.add(floor) : scene.remove(floor);
-            params['Show floor'] = val;
-        });
-    sceneFolder
-        .add(params, 'Show box')
-        .onChange(val => {
-            val ? scene.add(box) : scene.remove(box);
-            params['Show box'] = val;
-        });
-    sceneFolder
-        .add(params, 'Show sphere')
-        .onChange(val => {
-            val ? scene.add(sphere) : scene.remove(sphere);
-            params['Show sphere'] = val;
-        });
+    sceneFolder.add(params, 'Show floor').onChange(val => {
+        val ? scene.add(floor) : scene.remove(floor);
+        params['Show floor'] = val;
+    });
+    sceneFolder.add(params, 'Show box').onChange(val => {
+        val ? scene.add(box) : scene.remove(box);
+        params['Show box'] = val;
+    });
+    sceneFolder.add(params, 'Show sphere').onChange(val => {
+        val ? scene.add(sphere) : scene.remove(sphere);
+        params['Show sphere'] = val;
+    });
 
     // Controls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
