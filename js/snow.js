@@ -6,7 +6,7 @@ animate();
 function init() {
     // Params
     params = {
-        'Number of snowflakes': 1000,
+        'Number of snowflakes': 2000,
         'Snowflake size': 0.1,
         'Downward motion': 5,
         'Brownian motion': 2,
