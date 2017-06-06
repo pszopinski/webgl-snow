@@ -4,6 +4,7 @@ function createFloor() {
     var geometry = new THREE.CircleBufferGeometry(7.5, 8);
     var material = new THREE.MeshStandardMaterial({
         color: 0x333333,
+        dithering: true,
         metalness: 0.2,
         roughness: 0.8
     });
@@ -18,6 +19,7 @@ function createBox() {
     var geometry = new THREE.BoxBufferGeometry(2, 2, 2);
     var material = new THREE.MeshStandardMaterial({
         color: 0x66aaff,
+        dithering: true,
         shading: THREE.FlatShading,
         metalness: 0.2,
         roughness: 0.1
@@ -32,6 +34,7 @@ function createSphere() {
     var geometry = new THREE.IcosahedronGeometry(1, 2);
     var material = new THREE.MeshStandardMaterial({
         color: 0xff66aa,
+        dithering: true,
         metalness: 0.2,
         roughness: 0.1
     });
