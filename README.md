@@ -1,6 +1,6 @@
 # webgl-snow
 
-A particle system with collision detection written in three.js. Click [here](https://gorge-raccoon.github.io/webgl-snow/) to run the simulation.
+A particle system with collision detection written in three.js. Click [here](https://pszopinski.github.io/webgl-snow/) to run the simulation.
 
 
 ## Usage
